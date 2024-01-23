@@ -175,8 +175,8 @@ def Align3DModels():
         return pcd_down, pcd_fpfh
 
     voxel_size = 0.025  # means 5cm for this dataset
-    source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(
-        voxel_size, source, target)
+    #source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(
+        #voxel_size, source, target)
 
     def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size):
         distance_threshold = voxel_size * 0.4
@@ -187,9 +187,9 @@ def Align3DModels():
             source, target, distance_threshold, trans_init)
 
     # result_icp = refine_registration(source, target, source_fpfh, target_fpfh, voxel_size)
-    # result_icp = o3d.pipelines.registration.registration_icp(source, target, voxel_size * 0.4, trans_init)
-    o3d.pipelines.registration.registration_generalized_icp(source, target, voxel_size * 0.4, trans_init)
-    draw_registration_result(source_down, target_down, result_icp.transformation)
+    # o3d.pipelines.registration.registration_icp(source, target, voxel_size * 0.4, trans_init)
+    result_icp = o3d.pipelines.registration.registration_generalized_icp(source, target, voxel_size * 0.4, trans_init)
+    draw_registration_result(source, target, result_icp.transformation)
 
     t = Metashape.Matrix(result_icp.transformation)
     c2.transform.matrix = c2.transform.matrix * t
@@ -198,7 +198,7 @@ def Align3DModels():
 import Metashape
 
 def match_bounding_boxes():
-    Metashape.app.messageBox("Please make sure hat the reference chunk is the active chunk.!!")
+    Metashape.app.messageBox("Please make sure that the reference chunk is the active chunk.!!")
     doc = Metashape.app.document
 
     # Get the active chunk and its bounding box information
