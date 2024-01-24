@@ -64,25 +64,26 @@ def create_scale_bars():
     
         # Get the list of detected markers
         markers = chunk.markers
-    
+
         # Sort markers based on numeric part of the label
-        markers.sort(key=lambda x: int(''.join(filter(str.isdigit, x.label))))
-    
-        # Pair consecutive markers
-        paired_markers = [(markers[i], markers[i + 1]) for i in range(0, len(markers) - 1, 2)]
-    
+        #
+        # Filter markers to only include those starting with the word "target"
+        target_markers = [marker for marker in markers if marker.label.lower().startswith('target')]
+        target_markers.sort(key=lambda x: int(''.join(filter(str.isdigit, x.label))))
+        # Pair consecutive target markers
+        paired_markers = [(target_markers[i], target_markers[i + 1]) for i in range(0, len(target_markers) - 1, 2)]
+        
         # Check if at least one pair is found
         if not paired_markers:
-            print("Not enough consecutive markers found.")
+            print("Not enough consecutive target markers found.")
             return
-    
-        # Create a scale bar for each pair of markers
+        
+        # Create a scale bar for each pair of target markers
         for marker1, marker2 in paired_markers:
             scale_bar = chunk.addScalebar(marker1, marker2)
             scale_bar.reference.distance = target_distance
-    
+        
         print(f"Scale bars created successfully. Target distance: {target_distance} meters.")
-
 
 
 def Align3DModels():
