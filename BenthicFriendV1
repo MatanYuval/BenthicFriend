@@ -39,7 +39,7 @@ def process_chunk(chunk, percentage_to_filter):
 
 # Function to process all chunks in the document
 def process_all_chunks():
-    percentage_to_filter = Metashape.app.getFloat("Enter the filter for point removal, \n this is the percent of points you keep based on Reprojection error and reconstruction uncertainty", 0.8)
+    percentage_to_filter = Metashape.app.getFloat("Enter the filter for point removal, \n this is the percent of points you keep based on Reprojection error and reconstruction uncertainty", 85)
     # Iterate through all chunks in the document
     for chunk in Metashape.app.document.chunks:
         process_chunk(chunk, percentage_to_filter)
