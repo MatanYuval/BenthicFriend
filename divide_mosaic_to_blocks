@@ -1,0 +1,46 @@
+from PIL import Image
+import os
+import Metashape
+
+def divide_image():
+    # Get image path from the user
+    image_path = Metashape.app.getOpenFileName("Select Image File")
+
+    # Open the image
+    Image.MAX_IMAGE_PIXELS = None
+    img = Image.open(image_path)
+
+    # Get block size from the user
+    block_size = Metashape.app.getInt("Enter the block size", 2000)
+
+    # Get the size of the image
+    width, height = img.size
+
+    # Calculate the number of blocks in each dimension
+    num_blocks_x = (width + block_size - 1) // block_size
+    num_blocks_y = (height + block_size - 1) // block_size
+
+    # Create a directory to store the divided blocks
+    output_dir = os.path.splitext(image_path)[0] + '_divided_blocks'
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Loop through each block
+    for i in range(num_blocks_x):
+        for j in range(num_blocks_y):
+            # Calculate the coordinates of the current block
+            left = i * block_size
+            upper = j * block_size
+            right = min((i + 1) * block_size, width)
+            lower = min((j + 1) * block_size, height)
+
+            # Crop the image to get the current block
+            block = img.crop((left, upper, right, lower))
+
+            # Save the block to the output directory
+            block.save(os.path.join(output_dir, f'{os.path.basename(image_path)}_{i}_{j}.png'))
+
+    print("Image divided successfully.")
+
+if __name__ == "__main__":
+    # Add the menu item to Metashape
+    Metashape.app.addMenuItem("BenthicFriend/Cutphotomosaictoblocks", divide_image)
