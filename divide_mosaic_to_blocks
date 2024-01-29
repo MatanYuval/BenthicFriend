@@ -23,6 +23,7 @@ def divide_image():
     # Create a directory to store the divided blocks
     output_dir = os.path.splitext(image_path)[0] + '_divided_blocks'
     os.makedirs(output_dir, exist_ok=True)
+    filename_without_extension = os.path.splitext(os.path.basename(image_path))[0]
 
     # Loop through each block
     for i in range(num_blocks_x):
@@ -37,7 +38,7 @@ def divide_image():
             block = img.crop((left, upper, right, lower))
 
             # Save the block to the output directory
-            block.save(os.path.join(output_dir, f'{os.path.basename(image_path)}_{i}_{j}.png'))
+            block.save(os.path.join(output_dir, f'{filename_without_extension}_{i}_{j}.png'))
 
     print("Image divided successfully.")
 
