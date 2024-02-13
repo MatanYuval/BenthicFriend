@@ -175,7 +175,7 @@ def Align3DModels():
             o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
         return pcd_down, pcd_fpfh
 
-    voxel_size = 0.025  # means 5cm for this dataset
+    voxel_size = 0.001  # means 5cm for this dataset
     #source, target, source_down, target_down, source_fpfh, target_fpfh = prepare_dataset(
         #voxel_size, source, target)
 
