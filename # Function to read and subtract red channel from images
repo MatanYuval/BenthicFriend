@@ -1,0 +1,47 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Function to read and subtract red channel from images
+def subtract_red_channel(image1_path, image2_path):
+    # Read the images
+    img1 = cv2.imread(image1_path)
+    img2 = cv2.imread(image2_path)
+
+    # Check if images are of the same size
+    if img1.shape != img2.shape:
+        print("Error: Images must be of the same size.")
+        return None
+
+    # Extract red channel and convert to CV_16S
+    red_channel_img1 = img1[:, :, 2].astype(np.int16)
+    red_channel_img2 = img2[:, :, 2].astype(np.int16)
+
+    # Subtract the red channels
+    result_red_channel = red_channel_img2 - red_channel_img1
+
+    return img1, img2, result_red_channel
+
+# File paths of the images (replace with your actual file paths)
+image1_path = 'G:/Perlas/Contadora_0-25_Jan24.png'
+image2_path = 'G:/Perlas/Contadora_0-25_Sept23.png'
+
+# Subtract red channels and get original images
+img1, img2, result_red_channel = subtract_red_channel(image1_path, image2_path)
+
+# Plot the original images and the subtracted result
+plt.subplot(3, 1, 1)
+plt.imshow(img1[:, :, ::-1])  # Show the first image
+plt.axis('off')
+
+plt.subplot(3, 1, 2)
+plt.imshow(img2[:, :, ::-1])  # Show the second image
+plt.axis('off')
+
+plt.subplot(3, 1, 3)
+cmap = plt.get_cmap('RdBu')  # Red for positive values, blue for negative values
+plt.imshow(result_red_channel, cmap='RdBu', vmin=result_red_channel.min(), vmax=result_red_channel.max())
+plt.colorbar()
+plt.axis('off')
+
+plt.show()
