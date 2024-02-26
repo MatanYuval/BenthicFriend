@@ -28,6 +28,32 @@ fixed_effects = data.frame(fixef(model))
 model <- lmer(Intensity ~ SiteYXMXD * ColorOrdinal + (1 | CardUnique), data = Contadora_r_subset)
 ##How to use this model to standardize between measurement? 
 ### how much difference in intensity == difference in one unit grayscale?
+Contadora_r_subset$prediction = predict(model, re.form=NULL)
+d$prediction <- predict(model, re.form=NULL)
+
+plot_model(model, type = "pred", terms = c("ColorOrdinal", "SiteYXMXD"))
+summary(model)
+
+library(ggplot2)
+ggplot(Contadora_r_subset, aes(x = ColorOrdinal, y = Intensity, color = SiteYXMXD)) +
+  geom_point(position = position_dodge(width = 0.1), jitter = TRUE, alpha = 0.7) +
+  geom_smooth(se = .9, method = lm, size = 3)+
+  labs(title = "Scatter Plot of Intensity by Color",
+       x = "Color (Ordinal)",
+       y = "Intensity") +
+  scale_x_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
+                     labels = c("0", "0.2", "0.4", "0.6", "0.8", "1")) +
+  theme_minimal() +
+  theme(legend.position = "top", legend.title = element_blank(),
+        text = element_text(size = 24))
+# Plotting
+ggplot(Contadora_r_subset, aes(x = Intensity, y = prediction, color = SiteYXMXD)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +  # Add a linear fit line if needed
+  labs(title = "Observed Intensity vs Predicted Values",
+       x = "Observed Intensity",
+       y = "Predicted Values") +
+  theme_minimal()
 
 img24 <- load.image("C:/Users/YuvalMM/OneDrive - Smithsonian Institution/Desktop/Contadora_0-25_Jan24_divided_blocks/Contadora_0-25_Jan24_0_0.png")
 img23 <- load.image("C:/Users/YuvalMM/OneDrive - Smithsonian Institution/Desktop/Contadora_0-25_Sept23_divided_blocks/Contadora_0-25_Sept23_0_0.png")
@@ -63,4 +89,19 @@ ggplot(data.frame(value = r_channel_delta_vector), aes(x = value)) +
   geom_histogram(bins = 10, fill = "skyblue", color = "black", alpha = 0.7) +
   scale_y_log10() +
   labs(title = "Histogram of Matrix Differences", x = "Difference", y = "Frequency (log scale)") +
+  theme_minimal()
+
+# Create a scatterplot
+ggplot(data_df, aes(x = Var1, y = Var2, color = Freq)) +
+  geom_point() +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(title = "Scatterplot of Matrix Differences", x = "X-axis", y = "Y-axis")
+# Assuming you have ggplot2 library loaded
+
+library(ggplot2)
+
+# Create a scatter plot
+ggplot(r_channel_delta, aes(x = corrrected_Intensity, y = Intensity)) +
+  geom_point() +
+  labs(x = "Corrected Intensity", y = "Original Intensity", title = "Scatter Plot of Intensity") +
   theme_minimal()
