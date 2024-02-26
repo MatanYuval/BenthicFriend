@@ -1,0 +1,64 @@
+##STEP1: 
+export orthomosaic to folder
+import os
+
+# Set your output folder
+output_file = "E:\\Orthophotos\1.png"
+# Export raster tiles
+doc = Metashape.app.document
+chunk = doc.chunk
+chunk.exportRaster(path=output_file, split_in_blocks=True, tile_width=512, tile_height=512)
+
+
+##step2: read image tiles 1 by 1 and get pixel intensities on the color card: 
+###Remember- zooming and panning are printed- make sure not to count them... 
+
+import os
+import cv2
+import matplotlib.pyplot as plt
+
+# Path to the folder containing images
+image_folder = "E:/orthophotos"
+
+# List all image files in the folder
+image_files = [f for f in os.listdir(image_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp'))]
+
+# Index to keep track of the current image
+index = 0
+
+def on_click(event):
+    if event.name == 'button_press_event' and event.button == 1:  # Check for left mouse button click
+        if event.dblclick or event.inaxes is None or event.inaxes != plt.gca():  # Ignore double-click events, clicks outside the axes, and zoom/pan events
+            return
+        x, y = int(event.xdata), int(event.ydata)
+        intensity_values = current_image[y, x]  # Assuming intensity is a single value (grayscale)
+        print("Intensity values at pixel ({}, {}): {}".format(x, y, intensity_values))
+
+# Main loop for displaying images
+while index < len(image_files):
+    # Read the current image
+    image_file = image_files[index]
+    image_path = os.path.join(image_folder, image_file)
+    current_image = cv2.imread(image_path)
+
+    # Display the image using Matplotlib
+    fig, ax = plt.subplots()
+    ax.imshow(cv2.cvtColor(current_image, cv2.COLOR_BGR2RGB))
+    ax.set_title(image_file)
+
+    # Connect the callback function to the figure
+    fig.canvas.mpl_connect('button_press_event', on_click)
+
+    # Show the Matplotlib interactive plot (non-blocking)
+    plt.show(block=False)
+
+    # Wait for user input
+    plt.pause(0.001)
+
+    # Move to the next image if 'n' is pressed
+    user_input = input("Press 'n' to go to the next image or any other key to exit:")
+    if user_input.lower() == "n":
+        index += 1
+    else:
+        # Exit the loop if any other key is pressed
+        break
