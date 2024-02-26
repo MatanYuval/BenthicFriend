@@ -1,0 +1,66 @@
+# Install and load required packages
+install.packages(c("lme4", "imager","Matrix"))
+# Install and load the 'effects' library
+install.packages("effects")
+install.packages("ggplot2")
+library(effects)
+library(imager)
+library(lme4)
+library(Matrix)
+library(ggplot2)
+Contadora_r_subset <- read.csv("D:/Downloads/Contadora_r_subset.csv")
+summary(Contadora_r_subset)
+# Convert to factor
+Contadora_r_subset$Color <- as.factor(Contadora_r_subset$Color)
+Contadora_r_subset$SiteYXMXD <- as.factor(Contadora_r_subset$SiteYXMXD)
+Contadora_r_subset$CardUnique <- as.factor(Contadora_r_subset$CardUnique)
+summary(Contadora_r_subset)
+
+
+
+
+#model <- lmer('Intensity ~ ColorOrdinal * SiteYXMXD + (1|CardUnique)', data = Contadora_r_subset)
+#Contadora_r_subset$prediction = predict(model)
+#model <- lmer('Intensity ~  SiteYXMXD + (1|Color)+ (1|CardUnique)', data = Contadora_r_subset)
+# Fit the linear mixed-effects model
+model <- lmer(Intensity ~ SiteYXMXD + (1 | CardUnique/Color), data = Contadora_r_subset)
+fixed_effects = data.frame(fixef(model))
+model <- lmer(Intensity ~ SiteYXMXD * ColorOrdinal + (1 | CardUnique), data = Contadora_r_subset)
+##How to use this model to standardize between measurement? 
+### how much difference in intensity == difference in one unit grayscale?
+
+img24 <- load.image("C:/Users/YuvalMM/OneDrive - Smithsonian Institution/Desktop/Contadora_0-25_Jan24_divided_blocks/Contadora_0-25_Jan24_0_0.png")
+img23 <- load.image("C:/Users/YuvalMM/OneDrive - Smithsonian Institution/Desktop/Contadora_0-25_Sept23_divided_blocks/Contadora_0-25_Sept23_0_0.png")
+#img <- load.image("D:/Canal_Afuera_Matan_2/MTN_3228.JPG")
+r_channel <- channel(img24, 1)
+r_channel_transformed <- r_channel * 255
+r_channel_transformed <- as.integer(r_channel_transformed)
+#r_channel_transformed <- data.frame(Intensity = as.vector(r_channel_transformed), SiteYXMXD = "Con2024_Jan_5")
+# Make predictions using your lmer model
+r_channel_transformed <- as.integer(r_channel_transformed + abs(fixed_effects[3, ]))
+#r_channel_transformed <- as.numeric(r_channel_transformed) / 255
+#img24[, , 1] <- r_channel_transformed
+
+#summary(r_channel_transformed)
+r_channel2 <- channel(img23, 1)
+r_channel_transformed2 <- r_channel2 * 255
+r_channel_transformed2 <- as.integer(r_channel_transformed2)
+# Make predictions using your lmer model
+r_channel_transformed2 <- as.integer(r_channel_transformed2 + abs(fixed_effects[2, ]))
+#r_channel_transformed2 <- as.numeric(r_channel_transformed2) / 255
+r_channel_delta = r_channel_transformed - r_channel_transformed2
+# Reshape the vector back to the original image dimensions
+img_dimensions <- dim(img24)
+r_channel_delta_matrix <- matrix(r_channel_delta, nrow = img_dimensions[1], ncol = img_dimensions[2])
+# Convert the matrix to a data frame for ggplot
+r_channel_delta_matrix <- as.data.frame(as.table(r_channel_delta_matrix))
+
+r_channel_delta_vector <- as.vector(r_channel_delta)
+
+##Change num bins to fit with a difference in grayscale levels
+# Create a histogram
+ggplot(data.frame(value = r_channel_delta_vector), aes(x = value)) +
+  geom_histogram(bins = 10, fill = "skyblue", color = "black", alpha = 0.7) +
+  scale_y_log10() +
+  labs(title = "Histogram of Matrix Differences", x = "Difference", y = "Frequency (log scale)") +
+  theme_minimal()
