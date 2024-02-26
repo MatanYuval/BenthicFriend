@@ -1,3 +1,5 @@
+#   Make your subset file here:https://colab.research.google.com/drive/1HW23gPYjQsuxxVBTx8aDPzJay2n72flY
+
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
