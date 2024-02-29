@@ -19,7 +19,7 @@ img1 = cv2.imread(image1_path)
 img2 = cv2.imread(image2_path)
 
 ### use masked_image1 and masked_image2 from the colony delination--->> https://github.com/MatanYuval/BenthicFriend/blob/main/Mask%20single%20coral%20colonies
-
+ 
 # Extract red channel and convert to CV_16S
 red_channel_img1 = img1[:, :, 2].astype(np.int16)
 red_channel_img2 = img2[:, :, 2].astype(np.int16)
