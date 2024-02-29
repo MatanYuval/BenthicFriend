@@ -1,0 +1,66 @@
+import cv2
+import numpy as np
+
+image1_path = "C:/Users/YuvalMM/OneDrive - Smithsonian Institution/Desktop/Contadora_0-25_Sept23_divided_blocks/Contadora_0-25_Sept23_2_0.png"
+image2_path = "C:/Users/YuvalMM/OneDrive - Smithsonian Institution/Desktop/Contadora_0-25_March23_divided_blocks/Contadora_0-25_March23_2_0.png"
+
+# Function to draw a polygon on an image
+def draw_polygon(image, window_name, polygon_points_list):
+    cv2.imshow(window_name, image)
+
+    # Create a window and set the callback function for mouse events
+    polygon_points = []
+    def draw_polygon_callback(event, x, y, flags, param):
+        nonlocal polygon_points
+        if event == cv2.EVENT_LBUTTONDOWN:
+            polygon_points.append([x, y])
+            if len(polygon_points) > 1:
+                cv2.line(image, tuple(polygon_points[-2]), tuple(polygon_points[-1]), (0, 255, 0), 2)
+            cv2.imshow(window_name, image)
+
+    cv2.setMouseCallback(window_name, draw_polygon_callback)
+
+    # Keep the window open until the user presses 'Enter'
+    while True:
+        key = cv2.waitKey(1) & 0xFF
+        if key == 13:  # Enter key
+            break
+
+    # Close the window
+    cv2.destroyAllWindows()
+
+    # Save the polygon points
+    polygon_points_list.append(polygon_points)
+
+# Load the first image
+image1 = cv2.imread(image1_path)
+#image1  = cv2.resize(image1, None, fx=.5, fy=.5)
+polygon_points_list1 = []
+
+# Draw a polygon on the first image
+draw_polygon(image1, 'Image 1', polygon_points_list1)
+mask1 = np.zeros_like(image1, dtype=np.uint8)
+cv2.fillPoly(mask1, [np.array(polygon_points_list1[-1], dtype=np.int32)], color=(255, 255, 255))
+masked_image1 = cv2.bitwise_and(image1, mask1)
+
+# Load the second image
+image2 = cv2.imread(image2_path)
+#image2  = cv2.resize(image2, None, fx=.5, fy=.5)
+
+polygon_points_list2 = []
+
+# Draw a polygon on the second image
+draw_polygon(image2, 'Image 2', polygon_points_list2)
+mask2 = np.zeros_like(image2, dtype=np.uint8)
+cv2.fillPoly(mask2, [np.array(polygon_points_list2[-1], dtype=np.int32)], color=(255, 255, 255))
+masked_image2 = cv2.bitwise_and(image2, mask2)
+
+# Display the original images with the drawn polygons
+#cv2.polylines(image1, [np.array(polygon_points_list1[-1], dtype=np.int32)], isClosed=True, color=(0, 255, 0), thickness=2)
+#cv2.polylines(image2, [np.array(polygon_points_list2[-1], dtype=np.int32)], isClosed=True, color=(0, 255, 0), thickness=2)
+
+# Display the images with drawn polygons
+combined_images = np.concatenate((masked_image1, masked_image2), axis=1)
+cv2.imshow('Images with Drawn Polygons', combined_images)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
