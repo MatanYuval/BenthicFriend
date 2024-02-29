@@ -1,0 +1,51 @@
+###HERE you need the slope and intercept from your GLM
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.ndimage import convolve
+
+image2_path = '/content/Contadora_0-25_March23_6_2.png'  # Replace with the actual path of the first image
+image1_path = '/content/Contadora_0-25_Sept23_6_2.png'  # Replace with the actual path of the second image
+kernel = np.ones((100, 100)) / 10000.0
+# Read the original images
+img1 = cv2.imread(image1_path)
+img2 = cv2.imread(image2_path)
+
+### use masked_image1 and masked_image2 from the colony delination--->> https://github.com/MatanYuval/BenthicFriend/blob/main/Mask%20single%20coral%20colonies
+
+# Extract red channel and convert to CV_16S
+red_channel_img1 = img1[:, :, 2].astype(np.int16)
+red_channel_img2 = img2[:, :, 2].astype(np.int16)
+#red_channel_img1 = convolve(red_channel_img1, kernel, mode='constant', cval=0.0)
+#red_channel_img2 = convolve(red_channel_img2, kernel, mode='constant', cval=0.0)
+r_channel_transformed_sept = red_channel_img1
+#r_channel_transformed_jan_24 = red_channel_img1
+r_channel_transformed_march_23 = red_channel_img2
+predict_ColorOrdinl_march_23 = (r_channel_transformed_march_23 - intercept_23_march) /slope_23_march
+predict_ColorOrdinl_sept_23 = (r_channel_transformed_sept - intercept_23_sept) /slope_23_sept
+#predict_ColorOrdinl_jan_24 = (r_channel_transformed_jan_24- intercept_24) /slope_24
+#result_red_channel = predict_ColorOrdinl_jan_24 - predict_ColorOrdinl_sept_23
+result_red_channel = predict_ColorOrdinl_march_23 - predict_ColorOrdinl_sept_23
+
+# Display result with the custom colormap
+plt.figure(figsize=(12, 5))
+
+# Plot the image with custom colormap
+plt.subplot(1, 2, 1)
+cmap = plt.get_cmap('RdBu')  # Red for positive values, blue for negative values
+plt.imshow(result_red_channel, cmap='RdBu', vmin=result_red_channel.min(), vmax=result_red_channel.max())
+plt.colorbar()
+plt.title('Custom Colormap')
+
+# Plot the histogram
+plt.subplot(1, 2, 2)
+plt.hist(result_red_channel.flatten(), bins=10, color='skyblue', edgecolor='black')
+plt.yscale('log')  # Set logarithmic scale on y-axis
+
+plt.title('Histogram')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plots
+plt.show()
