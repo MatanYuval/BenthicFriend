@@ -1,4 +1,11 @@
 ###HERE you need the slope and intercept from your GLM
+###EXAMPLE FOR CONTADORA:
+slope_24 = -199.273 + 9.251
+intercept_24 = 224.629 +33.764
+slope_23_march = -199.273
+intercept_23_march = 224.629
+slope_23_sept = -199.273 + 28.781
+intercept_23_sept = 224.629 + 34.799
 
 import numpy as np
 import matplotlib.pyplot as plt
