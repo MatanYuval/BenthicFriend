@@ -1,13 +1,13 @@
 ##STEP1: 
-export orthomosaic to folder
+#export orthomosaic to folder
 import os
 
 # Set your output folder
-output_file = "E:\\Orthophotos\1.png"
+#output_file = "E:\\Orthophotos\1.png"
 # Export raster tiles
 doc = Metashape.app.document
 chunk = doc.chunk
-chunk.exportRaster(path=output_file, split_in_blocks=True, tile_width=512, tile_height=512)
+#chunk.exportRaster(path=output_file, split_in_blocks=True, tile_width=512, tile_height=512)
 
 
 ##step2: read image tiles 1 by 1 and get pixel intensities on the color card: 
