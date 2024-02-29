@@ -64,3 +64,7 @@ combined_images = np.concatenate((masked_image1, masked_image2), axis=1)
 cv2.imshow('Images with Drawn Polygons', combined_images)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
+cv2.imwrite('path/to/your/masked_image.jpg', masked_image1)
+cv2.imwrite('path/to/your/masked_image.jpg', masked_image2)
